@@ -12,6 +12,7 @@ model Client {
   image      String?
   name       String
   chatMembers Chatmember[]
+  chatMessages ChatMessage[]
 }
 
 model Chat {
@@ -36,6 +37,8 @@ model ChatMessage {
   chatId      Int
   chat        Chat @relation(fields: [chatId], references: [id])
   content     String
+  ownerId     Int
+  client      Client @relation(fields: [ownerId],references: [id])
   createdAt   DateTime  @default(now())
 }
 
