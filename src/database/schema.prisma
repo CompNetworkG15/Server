@@ -6,3 +6,40 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model Client {
+  id         Int          @id @default(autoincrement())
+  image      String?
+  name       String
+  Chatmember Chatmember[]
+}
+
+model ChatGroup {
+  id          Int           @id @default(autoincrement())
+  image       String?
+  chatType    ChatType
+  chatMessage ChatMessage[]
+  Chatmember  Chatmember[]
+}
+
+model Chatmember {
+  clientId    Int
+  client      Client    @relation(fields: [clientId], references: [id])
+  chatGroupId Int
+  chatGroup   ChatGroup @relation(fields: [chatGroupId], references: [id])
+
+  @@id([clientId, chatGroupId])
+}
+
+model ChatMessage {
+  id          Int       @id @default(autoincrement())
+  chatGroupId Int
+  chatgroup   ChatGroup @relation(fields: [chatGroupId], references: [id])
+  message     String
+  createdAt   DateTime  @default(now())
+}
+
+enum ChatType {
+  DIRECT
+  GROUP
+}
