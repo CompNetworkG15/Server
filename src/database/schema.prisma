@@ -11,31 +11,31 @@ model Client {
   id         Int          @id @default(autoincrement())
   image      String?
   name       String
-  Chatmember Chatmember[]
+  chatMembers Chatmember[]
 }
 
-model ChatGroup {
-  id          Int           @id @default(autoincrement())
-  image       String?
-  chatType    ChatType
-  chatMessage ChatMessage[]
-  Chatmember  Chatmember[]
+model Chat {
+  id            Int           @id @default(autoincrement())
+  image         String?
+  chatType      ChatType
+  chatMessages  ChatMessage[]
+  chatMembers   Chatmember[]
 }
 
 model Chatmember {
   clientId    Int
   client      Client    @relation(fields: [clientId], references: [id])
-  chatGroupId Int
-  chatGroup   ChatGroup @relation(fields: [chatGroupId], references: [id])
+  chatId      Int
+  chat        Chat @relation(fields: [chatId], references: [id])
 
-  @@id([clientId, chatGroupId])
+  @@id([clientId, chatId])
 }
 
 model ChatMessage {
   id          Int       @id @default(autoincrement())
-  chatGroupId Int
-  chatgroup   ChatGroup @relation(fields: [chatGroupId], references: [id])
-  message     String
+  chatId      Int
+  chat        Chat @relation(fields: [chatId], references: [id])
+  content     String
   createdAt   DateTime  @default(now())
 }
 

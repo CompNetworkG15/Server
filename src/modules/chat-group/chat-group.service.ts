@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CreateChatgroupDto } from './dto/create-chatgroup.dto';
-import { UpdateChatgroupDto } from './dto/update-chatgroup.dto';
+import { CreateChatGroupDto } from './dto/create-chatGroup.dto';
+import { UpdateChatGroupDto } from './dto/update-chatGroup.dto';
 
 @Injectable()
-export class ChatgroupService {
-  create(createChatgroupDto: CreateChatgroupDto) {
+export class ChatGroupService {
+  create(createChatgroupDto: CreateChatGroupDto) {
+    
     return 'This action adds a new chatgroup';
   }
 
@@ -16,7 +17,7 @@ export class ChatgroupService {
     return `This action returns a #${id} chatgroup`;
   }
 
-  update(id: number, updateChatgroupDto: UpdateChatgroupDto) {
+  update(id: number, updateChatgroupDto: UpdateChatGroupDto) {
     return `This action updates a #${id} chatgroup`;
   }
 
