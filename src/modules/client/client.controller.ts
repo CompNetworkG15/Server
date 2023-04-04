@@ -80,7 +80,18 @@ export class ClientController {
       throwErrorException(error);
     }
   }
-
+  @Get('/client/:email')
+  async findByEmail(
+    @Param('email') email: string,
+    @Res() response: FastifyReply,
+  ) {
+    try {
+      const client = await this.clientService.findClientByEmail(email);
+      response.status(HttpStatus.OK).send(client);
+    } catch (error) {
+      throwErrorException(error);
+    }
+  }
   @ApiConsumes('multipart/form-data')
   @Patch(':id')
   @FastifyFileInterceptor('image', {

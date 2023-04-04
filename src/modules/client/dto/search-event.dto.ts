@@ -5,5 +5,5 @@ export class SearchClientDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  readonly name: string = '';
+  readonly nickname: string = '';
 }

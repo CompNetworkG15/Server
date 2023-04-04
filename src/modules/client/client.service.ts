@@ -9,7 +9,7 @@ export class ClientService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createClientDto: CreateClientDto) {
     const { image, ...otherprops } = createClientDto;
-    return this.prismaService.client.create({
+    return await this.prismaService.client.create({
       data: {
         ...otherprops,
       },
@@ -19,8 +19,8 @@ export class ClientService {
   async findAll(searchClientDto: SearchClientDto) {
     return await this.prismaService.client.findMany({
       where: {
-        name: {
-          contains: searchClientDto.name,
+        nickname: {
+          contains: searchClientDto.nickname,
           mode: 'insensitive',
         },
       },
@@ -29,6 +29,12 @@ export class ClientService {
 
   async findOne(id: number) {
     return await this.prismaService.client.findUnique({ where: { id: id } });
+  }
+
+  async findClientByEmail(email: string) {
+    return await this.prismaService.client.findUnique({
+      where: { email: email },
+    });
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {

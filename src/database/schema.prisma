@@ -8,9 +8,10 @@ datasource db {
 }
 
 model Client {
-  id         Int          @id @default(autoincrement())
-  image      String?
-  name       String
+  id        Int          @id @default(autoincrement())
+  image     String?
+  email     String        @unique()
+  nickname  String
   chatMembers Chatmember[]
   chatMessages ChatMessage[]
 }
