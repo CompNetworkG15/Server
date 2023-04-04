@@ -2,16 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { SearchClientDto } from './dto/search-event.dto';
 
 @Injectable()
 export class ClientService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(createClientDto: CreateClientDto) {
-    return this.prismaService.client.create({ data: createClientDto });
+  async create(name: string, fileName: string) {
+    return this.prismaService.client.create({
+      data: {
+        name,
+        image: 'images/user-profile/' + fileName,
+      },
+    });
   }
 
-  async findAll() {
-    return this.prismaService.client.findMany({});
+  async findAll(searchClientDto: SearchClientDto) {
+    return this.prismaService.client.findMany({
+      where: {
+        name: {
+          contains: searchClientDto.name,
+          mode: 'insensitive',
+        },
+      },
+    });
   }
 
   async findOne(id: number) {

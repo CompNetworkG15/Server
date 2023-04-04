@@ -1,34 +1,112 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  Res,
+  HttpStatus,
+  Req,
+  UploadedFile,
+  Query,
+} from '@nestjs/common';
 import { ClientService } from './client.service';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
+import { ApiConsumes } from '@nestjs/swagger';
+import { FastifyFileInterceptor } from 'nest-fastify-multer';
+import { diskStorage } from 'multer';
+import { editFileName, imageFileFilter } from 'src/utils/upload-image-config';
+import { FastifyReply, FastifyRequest } from 'fastify';
+import { throwErrorException } from 'src/utils/error';
+import { fileMapper } from 'src/utils/file-mapper';
+import { SearchClientDto } from './dto/search-event.dto';
 
 @Controller('client')
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
+  @ApiConsumes('multipart/form-data')
   @Post()
-  create(@Body() createClientDto: CreateClientDto) {
-    return this.clientService.create(createClientDto);
+  @FastifyFileInterceptor('image', {
+    storage: diskStorage({
+      destination: './images/client-profile/', // path where the file will be downloaded
+      filename: editFileName, // here you can put your own function to edit multer file name when saving to local disk
+    }),
+    fileFilter: imageFileFilter, // here you can put your own function to filter the received files
+  })
+  async create(
+    @Req() request: FastifyRequest,
+    @Res() response: FastifyReply,
+    @Body() createClientDto: CreateClientDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const { name } = createClientDto;
+      const photoUrl = fileMapper({ file, request });
+      const client = await this.clientService.create(name, photoUrl.filename);
+      response.status(HttpStatus.CREATED).send(client);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 
   @Get()
-  findAll() {
-    return this.clientService.findAll();
+  async findAll(
+    @Query() searchClientDto: SearchClientDto,
+    @Res() response: FastifyReply,
+  ) {
+    try {
+      const clients = await this.clientService.findAll(searchClientDto);
+      response.status(HttpStatus.OK).send(clients);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.clientService.findOne(+id);
+  async findOne(@Param('id') id: string, @Res() response: FastifyReply) {
+    try {
+      const client = await this.clientService.findOne(+id);
+      response.status(HttpStatus.OK).send(client);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 
+  @ApiConsumes('multipart/form-data')
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateClientDto: UpdateClientDto) {
-    return this.clientService.update(+id, updateClientDto);
+  @FastifyFileInterceptor('image', {
+    storage: diskStorage({
+      destination: './images/client-profile/', // path where the file will be downloaded
+      filename: editFileName, // here you can put your own function to edit multer file name when saving to local disk
+    }),
+    fileFilter: imageFileFilter, // here you can put your own function to filter the received files
+  })
+  async update(
+    @Param('id') id: string,
+    @Body() updateClientDto: UpdateClientDto,
+    @Req() request: FastifyRequest,
+    @Res() response: FastifyReply,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    try {
+      const client = await this.clientService.update(+id, updateClientDto);
+      response.status(HttpStatus.OK).send(client);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.clientService.remove(+id);
+  async remove(@Param('id') id: string, @Res() response: FastifyReply) {
+    try {
+      const message = await this.clientService.remove(+id);
+      response.status(HttpStatus.OK).send(message);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 }
