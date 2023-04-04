@@ -5,6 +5,6 @@ export class CreateClientDto {
   @IsString()
   readonly name: string;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
   readonly image?: string;
 }
