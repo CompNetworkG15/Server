@@ -44,9 +44,14 @@ export class ClientController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const { name } = createClientDto;
-      const photoUrl = fileMapper({ file, request });
-      const client = await this.clientService.create(name, photoUrl.filename);
+      let client = await this.clientService.create(createClientDto);
+      if (file) {
+        const photoUrl = fileMapper({ file, request });
+        client = await this.clientService.uploadImage(
+          client.id,
+          photoUrl.filename,
+        );
+      }
       response.status(HttpStatus.CREATED).send(client);
     } catch (error) {
       throwErrorException(error);
@@ -93,7 +98,11 @@ export class ClientController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
-      const client = await this.clientService.update(+id, updateClientDto);
+      let client = await this.clientService.update(+id, updateClientDto);
+      if (file) {
+        const photoUrl = fileMapper({ file, request });
+        client = await this.clientService.uploadImage(+id, photoUrl.filename);
+      }
       response.status(HttpStatus.OK).send(client);
     } catch (error) {
       throwErrorException(error);

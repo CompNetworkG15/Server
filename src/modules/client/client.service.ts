@@ -7,17 +7,17 @@ import { SearchClientDto } from './dto/search-event.dto';
 @Injectable()
 export class ClientService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(name: string, fileName: string) {
+  async create(createClientDto: CreateClientDto) {
+    const { image, ...otherprops } = createClientDto;
     return this.prismaService.client.create({
       data: {
-        name,
-        image: 'images/user-profile/' + fileName,
+        ...otherprops,
       },
     });
   }
 
   async findAll(searchClientDto: SearchClientDto) {
-    return this.prismaService.client.findMany({
+    return await this.prismaService.client.findMany({
       where: {
         name: {
           contains: searchClientDto.name,
@@ -28,18 +28,30 @@ export class ClientService {
   }
 
   async findOne(id: number) {
-    return this.prismaService.client.findUnique({ where: { id: id } });
+    return await this.prismaService.client.findUnique({ where: { id: id } });
   }
 
   async update(id: number, updateClientDto: UpdateClientDto) {
-    return this.prismaService.client.update({
+    const { image, ...otherprops } = updateClientDto;
+    return await this.prismaService.client.update({
       where: { id: id },
-      data: updateClientDto,
+      data: {
+        ...otherprops,
+      },
     });
   }
 
   async remove(id: number) {
     await this.prismaService.client.delete({ where: { id: id } });
     return ` remove client id: ${id} successful`;
+  }
+
+  async uploadImage(id: number, filename: string) {
+    return await this.prismaService.client.update({
+      where: { id: id },
+      data: {
+        image: 'images/user-profile/' + filename,
+      },
+    });
   }
 }
