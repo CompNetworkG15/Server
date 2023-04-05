@@ -8,5 +8,5 @@ export class CreateChatDto {
   readonly chatid: number;
 
   @IsNumber()
-  readonly ownerId: number;
+  readonly clientId: number;
 }

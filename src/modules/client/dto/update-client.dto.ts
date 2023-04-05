@@ -7,7 +7,7 @@ export class UpdateClientDto {
   @ApiProperty({ required: false })
   @IsString()
   @IsOptional()
-  readonly name?: string;
+  readonly nickname?: string;
 
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   readonly image?: string;

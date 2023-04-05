@@ -23,6 +23,7 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { throwErrorException } from 'src/utils/error';
 import { fileMapper } from 'src/utils/file-mapper';
 import { SearchClientDto } from './dto/search-event.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('client')
 export class ClientController {
@@ -80,13 +81,10 @@ export class ClientController {
       throwErrorException(error);
     }
   }
-  @Get('/client/:email')
-  async findByEmail(
-    @Param('email') email: string,
-    @Res() response: FastifyReply,
-  ) {
+  @Post('/login')
+  async findByEmail(@Res() response: FastifyReply, @Body() loginDto: LoginDto) {
     try {
-      const client = await this.clientService.findClientByEmail(email);
+      const client = await this.clientService.findClientByEmail(loginDto.email);
       response.status(HttpStatus.OK).send(client);
     } catch (error) {
       throwErrorException(error);

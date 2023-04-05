@@ -1,15 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsArray } from 'class-validator';
+import { ChatType } from '@prisma/client';
+import { IsString, IsArray, IsEnum } from 'class-validator';
 
 export class CreateChatGroupDto {
   @ApiProperty()
   @IsString()
   readonly name: string;
 
-  @ApiProperty()
-  @IsArray()
-  readonly members: number[]; // array of client ids
+  @ApiProperty({ enum: ChatType })
+  @IsEnum(ChatType)
+  readonly chatType: ChatType;
 
-  @ApiProperty({ type: 'string', format: 'binary' })
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
   readonly image?: string;
 }

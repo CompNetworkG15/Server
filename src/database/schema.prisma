@@ -18,6 +18,7 @@ model Client {
 
 model Chat {
   id            Int           @id @default(autoincrement())
+  name          String
   image         String?
   chatType      ChatType
   chatMessages  ChatMessage[]
@@ -29,7 +30,8 @@ model Chatmember {
   client      Client    @relation(fields: [clientId], references: [id])
   chatId      Int
   chat        Chat @relation(fields: [chatId], references: [id])
-
+  status      ClientStatus
+  lastread    DateTime
   @@id([clientId, chatId])
 }
 
@@ -46,4 +48,8 @@ model ChatMessage {
 enum ChatType {
   DIRECT
   GROUP
+}
+enum ClientStatus {
+  INCHATGROUP
+  OFFLINE
 }
