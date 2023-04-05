@@ -8,12 +8,12 @@ import { ClientStatus } from '@prisma/client';
 export class ChatService {
   constructor(private readonly prismaService: PrismaService) {}
   async create(createChatDto: CreateChatDto) {
-    const { chatid, content, clientId } = createChatDto;
+    const { chatId, content, clientId } = createChatDto;
     return await this.prismaService.chatMessage.create({
       data: {
         chat: {
           connect: {
-            id: chatid,
+            id: chatId,
           },
         },
         client: {

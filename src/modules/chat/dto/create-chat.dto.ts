@@ -5,7 +5,7 @@ export class CreateChatDto {
   readonly content: string;
 
   @IsNumber()
-  readonly chatid: number;
+  readonly chatId: number;
 
   @IsNumber()
   readonly clientId: number;

@@ -19,9 +19,8 @@ export class ChatGateway {
   @SubscribeMessage('message')
   async create(@MessageBody() payload: CreateChatDto) {
     try {
-      // await this.chatService.create(payload);
-      this.server //.to(payload.chatid.toString())
-        .emit('message', payload);
+      await this.chatService.create(payload);
+      this.server.to(payload.chatId.toString()).emit('message', payload);
     } catch (error) {
       throwErrorException(error);
     }
@@ -33,12 +32,17 @@ export class ChatGateway {
     @MessageBody() payload: JoinChatDto,
   ) {
     try {
-      client.join(payload.chatId.toString());
+      await client.join(payload.chatId.toString());
       await this.chatService.join(payload);
+      const chatPayload: CreateChatDto = {
+        ...payload,
+        content: `Client Id ${payload.clientId} has joined the room`,
+      };
+      await this.chatService.create(chatPayload);
+      this.server.to(payload.chatId.toString()).emit('message', chatPayload);
     } catch (error) {
       throwErrorException(error);
     }
-    // this.server.to(payload.chatId.toString()).emit('message');
   }
 
   @SubscribeMessage('leave')
@@ -47,7 +51,13 @@ export class ChatGateway {
     @MessageBody() payload: JoinChatDto,
   ) {
     try {
-      client.leave(payload.chatId.toString());
+      const chatPayload: CreateChatDto = {
+        ...payload,
+        content: `Client Id ${payload.clientId} has left the room`,
+      };
+      await this.chatService.create(chatPayload);
+      this.server.to(payload.chatId.toString()).emit('message', chatPayload);
+      await client.leave(payload.chatId.toString());
       await this.chatService.leave(payload);
     } catch (error) {
       throwErrorException(error);
