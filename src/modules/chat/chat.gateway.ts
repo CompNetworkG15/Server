@@ -9,6 +9,7 @@ import { ChatService } from './chat.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { JoinChatDto } from './dto/join-chat.dto';
 import { Server, Socket } from 'socket.io';
+import { throwErrorException } from 'src/utils/error';
 
 @WebSocketGateway(2000, { cors: '*' })
 export class ChatGateway {
@@ -17,8 +18,13 @@ export class ChatGateway {
 
   @SubscribeMessage('message')
   async create(@MessageBody() payload: CreateChatDto) {
-    await this.chatService.create(payload);
-    this.server.to(payload.chatid.toString()).emit('message', payload);
+    try {
+      // await this.chatService.create(payload);
+      this.server //.to(payload.chatid.toString())
+        .emit('message', payload);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 
   @SubscribeMessage('join')
@@ -26,8 +32,12 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: JoinChatDto,
   ) {
-    client.join(payload.chatId.toString());
-    await this.chatService.join(payload);
+    try {
+      client.join(payload.chatId.toString());
+      await this.chatService.join(payload);
+    } catch (error) {
+      throwErrorException(error);
+    }
     // this.server.to(payload.chatId.toString()).emit('message');
   }
 
@@ -36,7 +46,11 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: JoinChatDto,
   ) {
-    await this.chatService.leave(payload);
-    client.leave(payload.chatId.toString());
+    try {
+      client.leave(payload.chatId.toString());
+      await this.chatService.leave(payload);
+    } catch (error) {
+      throwErrorException(error);
+    }
   }
 }
