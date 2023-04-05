@@ -40,8 +40,8 @@ model ChatMessage {
   chatId      Int
   chat        Chat @relation(fields: [chatId], references: [id])
   content     String
-  ownerId     Int
-  client      Client @relation(fields: [ownerId],references: [id])
+  clientId     Int
+  client      Client @relation(fields: [clientId],references: [id])
   createdAt   DateTime  @default(now())
 }
 
