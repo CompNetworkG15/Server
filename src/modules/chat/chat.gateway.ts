@@ -33,13 +33,13 @@ export class ChatGateway {
   ) {
     try {
       await client.join(payload.chatId.toString());
-      await this.chatService.join(payload);
-      const chatPayload: CreateChatDto = {
-        ...payload,
-        content: `Client Id ${payload.clientId} has joined the room`,
-      };
-      await this.chatService.create(chatPayload);
-      this.server.to(payload.chatId.toString()).emit('message', chatPayload);
+      // await this.chatService.join(payload);
+      // const chatPayload: CreateChatDto = {
+      //   ...payload,
+      //   content: `Client Id ${payload.clientId} has joined the room`,
+      // };
+      // await this.chatService.create(chatPayload);
+      // this.server.to(payload.chatId.toString()).emit('message', chatPayload);
     } catch (error) {
       throwErrorException(error);
     }
@@ -51,14 +51,14 @@ export class ChatGateway {
     @MessageBody() payload: JoinChatDto,
   ) {
     try {
-      const chatPayload: CreateChatDto = {
-        ...payload,
-        content: `Client Id ${payload.clientId} has left the room`,
-      };
-      await this.chatService.create(chatPayload);
-      this.server.to(payload.chatId.toString()).emit('message', chatPayload);
+      // const chatPayload: CreateChatDto = {
+      //   ...payload,
+      //   content: `Client Id ${payload.clientId} has left the room`,
+      // };
+      // await this.chatService.create(chatPayload);
+      // this.server.to(payload.chatId.toString()).emit('message', chatPayload);
       await client.leave(payload.chatId.toString());
-      await this.chatService.leave(payload);
+      // await this.chatService.leave(payload);
     } catch (error) {
       throwErrorException(error);
     }

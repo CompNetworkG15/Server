@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ClientStatus } from '@prisma/client';
-import { IsDate, IsEnum, IsInt, IsOptional } from 'class-validator';
+import { IsDateString, IsEnum, IsInt, IsOptional } from 'class-validator';
 
 export class UpdateChatMemberDto {
   @ApiProperty()
@@ -12,9 +12,9 @@ export class UpdateChatMemberDto {
   readonly clientId: number;
 
   @ApiProperty({ required: false, type: Date })
-  @IsDate()
+  @IsDateString()
   @IsOptional()
-  readonly lastread?: Date;
+  readonly lastread?: string;
 
   @ApiProperty({ required: false, enum: ClientStatus })
   @IsEnum(ClientStatus)

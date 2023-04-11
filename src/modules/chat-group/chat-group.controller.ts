@@ -12,7 +12,7 @@ import {
   Req,
   UploadedFile,
 } from '@nestjs/common';
-import { ChatGroupService } from './chat-group.service';
+import { ChatGroupService, DisplayChat } from './chat-group.service';
 import { CreateChatGroupDto } from './dto/create-chatGroup.dto';
 import { UpdateChatGroupDto } from './dto/update-chatGroup.dto';
 import { FastifyReply, FastifyRequest } from 'fastify';
@@ -24,7 +24,6 @@ import { diskStorage } from 'multer';
 import { editFileName, imageFileFilter } from 'src/utils/upload-image-config';
 import { fileMapper } from 'src/utils/file-mapper';
 import { UpdateChatMemberDto } from './dto/update-chatmember.dto';
-import { response } from 'express';
 import { ChatService } from '../chat/chat.service';
 import { JoinChatDto } from '../chat/dto/join-chat.dto';
 
@@ -79,42 +78,63 @@ export class ChatGroupController {
     }
   }
 
-  @Get()
+  @Get('/all-group/:clientId')
   async findAll(
     @Query() SearchChatGroupDto: SearchChatGroupDto,
+    @Param('clientId') clientId: string,
     @Res() response: FastifyReply,
   ) {
     try {
       const chatGroups = await this.chatgroupService.findAll(
         SearchChatGroupDto,
+        +clientId,
       );
-      response.status(HttpStatus.OK).send(chatGroups);
+      const formatData = this.chatgroupService.formatMany(
+        +clientId,
+        chatGroups,
+        SearchChatGroupDto,
+      );
+      response.status(HttpStatus.OK).send(formatData);
     } catch (error) {
       throwErrorException(error);
     }
   }
 
-  @Get('/myGroups/:id')
-  async findMychatGroup(
+  @Get('/own-group/:clientId')
+  async findchatGroupsByClientId(
     @Query() SearchChatGroupDto: SearchChatGroupDto,
-    @Param('id') id: string,
+    @Param('clientId') clientId: string,
     @Res() response: FastifyReply,
   ) {
     try {
-      const chatGroups = await this.chatgroupService.findMyChatGroup(
+      const chatGroups = await this.chatgroupService.findChatGroupsByClientId(
         SearchChatGroupDto,
-        +id,
+        +clientId,
       );
-      response.status(HttpStatus.OK).send(chatGroups);
+      const formatData = this.chatgroupService.formatMany(
+        +clientId,
+        chatGroups,
+        SearchChatGroupDto,
+      );
+
+      response.status(HttpStatus.OK).send(formatData);
     } catch (error) {
       throwErrorException(error);
     }
   }
-  @Get(':id')
-  async findOne(@Param('id') id: string, @Res() response: FastifyReply) {
+  @Get('/own-group/:clientId/:chatId')
+  async findOne(
+    @Param('chatId') chatId: string,
+    @Param('clientId') clientId: string,
+    @Res() response: FastifyReply,
+  ) {
     try {
-      const chatGroup = await this.chatgroupService.findOne(+id);
-      response.status(HttpStatus.OK).send(chatGroup);
+      const chatGroup = await this.chatgroupService.findOne(+chatId);
+      const formatChatGroup = this.chatgroupService.formatOne(
+        +clientId,
+        chatGroup,
+      );
+      response.status(HttpStatus.OK).send(formatChatGroup);
     } catch (error) {
       throwErrorException(error);
     }

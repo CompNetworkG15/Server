@@ -29,35 +29,35 @@ import { LoginDto } from './dto/login.dto';
 export class ClientController {
   constructor(private readonly clientService: ClientService) {}
 
-  @ApiConsumes('multipart/form-data')
-  @Post()
-  @FastifyFileInterceptor('image', {
-    storage: diskStorage({
-      destination: './images/client-profile/', // path where the file will be downloaded
-      filename: editFileName, // here you can put your own function to edit multer file name when saving to local disk
-    }),
-    fileFilter: imageFileFilter, // here you can put your own function to filter the received files
-  })
-  async create(
-    @Req() request: FastifyRequest,
-    @Res() response: FastifyReply,
-    @Body() createClientDto: CreateClientDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    try {
-      let client = await this.clientService.create(createClientDto);
-      if (file) {
-        const photoUrl = fileMapper({ file, request });
-        client = await this.clientService.uploadImage(
-          client.id,
-          photoUrl.filename,
-        );
-      }
-      response.status(HttpStatus.CREATED).send(client);
-    } catch (error) {
-      throwErrorException(error);
-    }
-  }
+  // @ApiConsumes('multipart/form-data')
+  // @Post()
+  // @FastifyFileInterceptor('image', {
+  //   storage: diskStorage({
+  //     destination: './images/client-profile/', // path where the file will be downloaded
+  //     filename: editFileName, // here you can put your own function to edit multer file name when saving to local disk
+  //   }),
+  //   fileFilter: imageFileFilter, // here you can put your own function to filter the received files
+  // })
+  // async create(
+  //   @Req() request: FastifyRequest,
+  //   @Res() response: FastifyReply,
+  //   @Body() createClientDto: CreateClientDto,
+  //   @UploadedFile() file: Express.Multer.File,
+  // ) {
+  //   try {
+  //     let client = await this.clientService.create(createClientDto);
+  //     if (file) {
+  //       const photoUrl = fileMapper({ file, request });
+  //       client = await this.clientService.uploadImage(
+  //         client.id,
+  //         photoUrl.filename,
+  //       );
+  //     }
+  //     response.status(HttpStatus.CREATED).send(client);
+  //   } catch (error) {
+  //     throwErrorException(error);
+  //   }
+  // }
 
   @Get()
   async findAll(

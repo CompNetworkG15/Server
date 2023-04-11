@@ -1,6 +1,9 @@
 -- CreateEnum
 CREATE TYPE "ChatType" AS ENUM ('DIRECT', 'GROUP');
 
+-- CreateEnum
+CREATE TYPE "ClientStatus" AS ENUM ('INCHATGROUP', 'OFFLINE');
+
 -- CreateTable
 CREATE TABLE "Client" (
     "id" SERIAL NOT NULL,
@@ -14,6 +17,7 @@ CREATE TABLE "Client" (
 -- CreateTable
 CREATE TABLE "Chat" (
     "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
     "image" TEXT,
     "chatType" "ChatType" NOT NULL,
 
@@ -24,6 +28,8 @@ CREATE TABLE "Chat" (
 CREATE TABLE "Chatmember" (
     "clientId" INTEGER NOT NULL,
     "chatId" INTEGER NOT NULL,
+    "status" "ClientStatus" NOT NULL,
+    "lastread" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "Chatmember_pkey" PRIMARY KEY ("clientId","chatId")
 );
@@ -33,7 +39,7 @@ CREATE TABLE "ChatMessage" (
     "id" SERIAL NOT NULL,
     "chatId" INTEGER NOT NULL,
     "content" TEXT NOT NULL,
-    "ownerId" INTEGER NOT NULL,
+    "clientId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
     CONSTRAINT "ChatMessage_pkey" PRIMARY KEY ("id")
@@ -52,4 +58,4 @@ ALTER TABLE "Chatmember" ADD CONSTRAINT "Chatmember_chatId_fkey" FOREIGN KEY ("c
 ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_chatId_fkey" FOREIGN KEY ("chatId") REFERENCES "Chat"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_ownerId_fkey" FOREIGN KEY ("ownerId") REFERENCES "Client"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "ChatMessage" ADD CONSTRAINT "ChatMessage_clientId_fkey" FOREIGN KEY ("clientId") REFERENCES "Client"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

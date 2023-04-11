@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JoinChatDto } from './dto/join-chat.dto';
-import { ClientStatus } from '@prisma/client';
+import { ChatMessage, ClientStatus } from '@prisma/client';
+
+type DisplayMessage = ChatMessage & {
+  client: {
+    nickname: string;
+  };
+};
 
 @Injectable()
 export class ChatService {
@@ -40,7 +46,7 @@ export class ChatService {
             id: clientId,
           },
         },
-        status: ClientStatus.INCHATGROUP,
+        status: ClientStatus.OFFLINE,
       },
     });
   }
@@ -62,6 +68,13 @@ export class ChatService {
       where: {
         chatId: chatId,
       },
+      include: {
+        client: {
+          select: {
+            nickname: true,
+          },
+        },
+      },
       orderBy: {
         createdAt: 'asc',
       },
@@ -82,16 +95,25 @@ export class ChatService {
     if (status === ClientStatus.INCHATGROUP) {
       return 0;
     }
-    return await this.prismaService.chatMessage.findMany({
+    return await this.prismaService.chatMessage.count({
       where: {
         chatId: chatId,
         createdAt: {
           gte: lastread,
         },
       },
-      orderBy: {
-        createdAt: 'asc',
-      },
+      // orderBy: {
+      //   createdAt: 'asc',
+      // },
+    });
+  }
+  removeExcesskey(displayMessage: DisplayMessage) {
+    const { client, ...otherprops } = displayMessage;
+    return { ...otherprops, nickname: client.nickname };
+  }
+  formatManyMessages(displayMessages: DisplayMessage[]) {
+    return displayMessages.map((message) => {
+      return this.removeExcesskey(message);
     });
   }
 }

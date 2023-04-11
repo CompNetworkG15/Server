@@ -14,7 +14,8 @@ export class ChatController {
     const messages = await this.chatService.getAllHistoryMessageByChatId(
       +chatGroupId,
     );
-    response.status(HttpStatus.OK).send(messages);
+    const formattedMessages = this.chatService.formatManyMessages(messages);
+    response.status(HttpStatus.OK).send(formattedMessages);
   }
 
   @Get('/:clientId/unread/:chatId')
