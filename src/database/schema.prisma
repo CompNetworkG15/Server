@@ -31,7 +31,7 @@ model Chatmember {
   chatId      Int
   chat        Chat @relation(fields: [chatId], references: [id])
   status      ClientStatus
-  lastread    DateTime
+  lastread    DateTime @default(now())
   @@id([clientId, chatId])
 }
 

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Chatmember" ALTER COLUMN "lastread" SET DEFAULT CURRENT_TIMESTAMP;

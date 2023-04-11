@@ -22,7 +22,7 @@ import { editFileName, imageFileFilter } from 'src/utils/upload-image-config';
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { throwErrorException } from 'src/utils/error';
 import { fileMapper } from 'src/utils/file-mapper';
-import { SearchClientDto } from './dto/search-event.dto';
+import { SearchClientDto } from './dto/search-client.dto';
 import { LoginDto } from './dto/login.dto';
 
 @Controller('client')

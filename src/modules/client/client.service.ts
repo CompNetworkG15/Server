@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateClientDto } from './dto/create-client.dto';
 import { UpdateClientDto } from './dto/update-client.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { SearchClientDto } from './dto/search-event.dto';
+import { SearchClientDto } from './dto/search-client.dto';
 
 @Injectable()
 export class ClientService {

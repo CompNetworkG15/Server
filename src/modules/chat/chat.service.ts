@@ -41,7 +41,6 @@ export class ChatService {
           },
         },
         status: ClientStatus.INCHATGROUP,
-        lastread: Date(),
       },
     });
   }

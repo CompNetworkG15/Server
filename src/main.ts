@@ -20,7 +20,7 @@ async function bootstrap() {
     adapter,
   );
   app.enableCors({
-    origin: ['http://localhost:5433'],
+    origin: ['http://localhost:2001'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });

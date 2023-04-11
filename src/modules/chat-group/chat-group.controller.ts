@@ -25,10 +25,15 @@ import { editFileName, imageFileFilter } from 'src/utils/upload-image-config';
 import { fileMapper } from 'src/utils/file-mapper';
 import { UpdateChatMemberDto } from './dto/update-chatmember.dto';
 import { response } from 'express';
+import { ChatService } from '../chat/chat.service';
+import { JoinChatDto } from '../chat/dto/join-chat.dto';
 
 @Controller('chatgroup')
 export class ChatGroupController {
-  constructor(private readonly chatgroupService: ChatGroupService) {}
+  constructor(
+    private readonly chatgroupService: ChatGroupService,
+    private readonly chatService: ChatService,
+  ) {}
 
   @ApiConsumes('multipart/form-data')
   @Post()
@@ -60,6 +65,20 @@ export class ChatGroupController {
     }
   }
 
+  @Post('/join')
+  async joinChatGroup(
+    @Res() response: FastifyReply,
+    @Body() payload: JoinChatDto,
+  ) {
+    try {
+      const chatmember = await this.chatService.join(payload);
+      response.status(HttpStatus.OK).send(chatmember);
+    } catch (error) {
+      console.log(error);
+      throwErrorException(error);
+    }
+  }
+
   @Get()
   async findAll(
     @Query() SearchChatGroupDto: SearchChatGroupDto,
@@ -75,6 +94,22 @@ export class ChatGroupController {
     }
   }
 
+  @Get('/myGroups/:id')
+  async findMychatGroup(
+    @Query() SearchChatGroupDto: SearchChatGroupDto,
+    @Param('id') id: string,
+    @Res() response: FastifyReply,
+  ) {
+    try {
+      const chatGroups = await this.chatgroupService.findMyChatGroup(
+        SearchChatGroupDto,
+        +id,
+      );
+      response.status(HttpStatus.OK).send(chatGroups);
+    } catch (error) {
+      throwErrorException(error);
+    }
+  }
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() response: FastifyReply) {
     try {

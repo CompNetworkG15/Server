@@ -29,6 +29,27 @@ export class ChatGroupService {
     });
   }
 
+  async findMyChatGroup(
+    searchChatGroupDto: SearchChatGroupDto,
+    clientId: number,
+  ) {
+    const { chatType, name } = searchChatGroupDto;
+    return await this.prismaService.chat.findMany({
+      where: {
+        chatType: chatType,
+        name: {
+          contains: name,
+          mode: 'insensitive',
+        },
+        chatMembers: {
+          some: {
+            clientId: clientId,
+          },
+        },
+      },
+    });
+  }
+
   async findOne(id: number) {
     return await this.prismaService.chat.findUnique({ where: { id: id } });
   }
