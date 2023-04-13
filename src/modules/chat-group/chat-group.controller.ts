@@ -11,6 +11,7 @@ import {
   Query,
   Req,
   UploadedFile,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ChatGroupService, DisplayChat } from './chat-group.service';
 import { CreateChatGroupDto } from './dto/create-chatGroup.dto';
@@ -34,7 +35,7 @@ export class ChatGroupController {
   ) {}
 
   @ApiConsumes('multipart/form-data')
-  @Post()
+  @Post(':clientId')
   @FastifyFileInterceptor('image', {
     storage: diskStorage({
       destination: './images/group-profile/', // path where the file will be downloaded
@@ -46,10 +47,12 @@ export class ChatGroupController {
     @Body() createChatgroupDto: CreateChatGroupDto,
     @Res() response: FastifyReply,
     @Req() request: FastifyRequest,
+    @Param('clientId', ParseIntPipe) clientId: number,
     @UploadedFile() file: Express.Multer.File,
   ) {
     try {
       let chatgroup = await this.chatgroupService.create(createChatgroupDto);
+      await this.chatService.join({ chatId: chatgroup.id, clientId: clientId });
       if (file) {
         const photoUrl = fileMapper({ file, request });
         chatgroup = await this.chatgroupService.uploadImage(

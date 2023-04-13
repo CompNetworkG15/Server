@@ -84,8 +84,14 @@ export class ClientController {
   @Post('/login')
   async findByEmail(@Res() response: FastifyReply, @Body() loginDto: LoginDto) {
     try {
-      const client = await this.clientService.findClientByEmail(loginDto.email);
-      response.status(HttpStatus.OK).send(client);
+      const { chatMembers, ...client } =
+        await this.clientService.findClientByEmail(loginDto.email);
+      const formattedChatMember = chatMembers.map((chat) => {
+        return chat.chatId;
+      });
+      response
+        .status(HttpStatus.OK)
+        .send({ ...client, joinedChatGroups: formattedChatMember });
     } catch (error) {
       throwErrorException(error);
     }
