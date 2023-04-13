@@ -26,7 +26,6 @@ import { fileMapper } from 'src/utils/file-mapper';
 import { UpdateChatMemberDto } from './dto/update-chatmember.dto';
 import { ChatService } from '../chat/chat.service';
 import { JoinChatDto } from '../chat/dto/join-chat.dto';
-
 @Controller('chatgroup')
 export class ChatGroupController {
   constructor(
@@ -80,19 +79,19 @@ export class ChatGroupController {
 
   @Get('/all-group/:clientId')
   async findAll(
-    @Query() SearchChatGroupDto: SearchChatGroupDto,
+    @Query() searchChatGroupDto: SearchChatGroupDto,
     @Param('clientId') clientId: string,
     @Res() response: FastifyReply,
   ) {
     try {
       const chatGroups = await this.chatgroupService.findAll(
-        SearchChatGroupDto,
+        searchChatGroupDto,
         +clientId,
       );
       const formatData = this.chatgroupService.formatMany(
         +clientId,
         chatGroups,
-        SearchChatGroupDto,
+        searchChatGroupDto,
       );
       response.status(HttpStatus.OK).send(formatData);
     } catch (error) {

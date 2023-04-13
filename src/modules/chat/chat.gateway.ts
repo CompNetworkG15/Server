@@ -63,4 +63,10 @@ export class ChatGateway {
       throwErrorException(error);
     }
   }
+
+  @SubscribeMessage('newJoiner')
+  async findall(@MessageBody() hasNewMember: boolean) {
+    console.log('receive');
+    this.server.emit('newJoiner', true);
+  }
 }
