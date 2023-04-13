@@ -20,7 +20,12 @@ export class ChatGateway {
   async create(@MessageBody() payload: CreateChatDto) {
     try {
       await this.chatService.create(payload);
-      this.server.to(payload.chatId.toString()).emit('message', payload);
+      const { nickname } = await this.chatService.getClintNickname(
+        payload.clientId,
+      );
+      this.server
+        .to(payload.chatId.toString())
+        .emit('message', { ...payload, nickname: nickname });
     } catch (error) {
       throwErrorException(error);
     }

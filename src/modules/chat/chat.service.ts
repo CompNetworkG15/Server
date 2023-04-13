@@ -116,4 +116,14 @@ export class ChatService {
       return this.removeExcesskey(message);
     });
   }
+  async getClintNickname(clientId: number) {
+    return await this.prismaService.client.findUnique({
+      where: {
+        id: clientId,
+      },
+      select: {
+        nickname: true,
+      },
+    });
+  }
 }

@@ -23,17 +23,13 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { fileMapper } from 'src/utils/file-mapper';
 import { ClientService } from '../client/client.service';
 import { throwErrorException } from 'src/utils/error';
-import { WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
 
-@WebSocketGateway(2000, { cors: '*' })
 @Controller('client')
 export class RegistrationController {
   constructor(
     private readonly registrationService: RegistrationService,
     private readonly clientService: ClientService,
   ) {}
-  @WebSocketServer() server: Server;
 
   @ApiConsumes('multipart/form-data')
   @Post()
@@ -60,7 +56,6 @@ export class RegistrationController {
         );
       }
       response.status(HttpStatus.CREATED).send(client);
-      this.server.emit('newJoiner', true);
     } catch (error) {
       throwErrorException(error);
     }
