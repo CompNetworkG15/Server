@@ -28,7 +28,16 @@ export class ClientService {
   }
 
   async findOne(id: number) {
-    return await this.prismaService.client.findUnique({ where: { id: id } });
+    return await this.prismaService.client.findUnique({
+      where: { id: id },
+      include: {
+        chatMembers: {
+          select: {
+            chatId: true,
+          },
+        },
+      },
+    });
   }
 
   async findClientByEmail(email: string) {

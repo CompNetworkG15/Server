@@ -75,7 +75,13 @@ export class ClientController {
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() response: FastifyReply) {
     try {
-      const client = await this.clientService.findOne(+id);
+      const { chatMembers, ...client } = await this.clientService.findOne(+id);
+      const formattedChatMember = chatMembers.map((chat) => {
+        return chat.chatId;
+      });
+      response
+        .status(HttpStatus.OK)
+        .send({ ...client, joinedChatGroups: formattedChatMember });
       response.status(HttpStatus.OK).send(client);
     } catch (error) {
       throwErrorException(error);
