@@ -84,7 +84,6 @@ export class ChatGroupService {
           this.findAllDirect(clientId),
         ]);
         displayChat = groupChat.concat(directChat);
-        displayChat.concat();
         displayChat.sort((chat1, chat2) => {
           return chat1.id - chat2.id;
         });
