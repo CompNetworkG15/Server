@@ -42,21 +42,20 @@ export class ChatGateway {
   ) {
     try {
       await client.join(payload.chatId.toString());
-      await this.chatService.join(payload);
       const { nickname } = await this.chatService.getClintNickname(
         payload.clientId,
       );
+      console.log('4');
       const chatPayload: CreateChatDto = {
         ...payload,
         content: `${nickname} has joined the room`,
       };
-      const messageContent = await this.chatService.create(
-        chatPayload,
-        MessageType.SYSTEM,
-      );
-      this.server
-        .to(payload.chatId.toString())
-        .emit('message', { ...messageContent, nickname: nickname });
+      this.server.to(payload.chatId.toString()).emit('message', {
+        ...chatPayload,
+        createdAt: Date(),
+        nickname: nickname,
+        messageType: MessageType.SYSTEM,
+      });
     } catch (error) {
       throwErrorException(error);
     }
@@ -83,7 +82,6 @@ export class ChatGateway {
 
   @SubscribeMessage('newJoiner')
   async findall(@MessageBody() hasNewMember: boolean) {
-    console.log('receive');
     this.server.emit('newJoiner', true);
   }
 }
