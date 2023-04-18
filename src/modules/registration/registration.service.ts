@@ -19,6 +19,7 @@ export class RegistrationService {
     const searchClientDto: SearchClientDto = new SearchClientDto();
     const allClient = await this.clientService.findAll(searchClientDto);
     const newclient = await this.clientService.create(createClientDto);
+    let results = [];
     allClient.forEach(async (client: Client) => {
       const CreateChatGroupDto: CreateChatGroupDto = {
         name: `${newclient.nickname},${client.nickname}`,
@@ -33,11 +34,12 @@ export class RegistrationService {
         chatId: newGroup.id,
         clientId: newclient.id,
       };
-      await Promise.all([
+      results.push(
         this.chatService.join(oldmemberjoinChatDto),
         this.chatService.join(newmemberjoinChatDto),
-      ]);
+      );
     });
+    await Promise.all(results);
     return newclient;
   }
 }

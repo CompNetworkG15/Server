@@ -43,8 +43,12 @@ model ChatMessage {
   clientId     Int
   client      Client @relation(fields: [clientId],references: [id])
   createdAt   DateTime  @default(now())
+  messageType MessageType
 }
-
+enum MessageType {
+  CLIENT
+  SYSTEM
+}
 enum ChatType {
   DIRECT
   GROUP

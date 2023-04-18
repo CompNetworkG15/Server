@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JoinChatDto } from './dto/join-chat.dto';
-import { ChatMessage, ClientStatus } from '@prisma/client';
+import { ChatMessage, ClientStatus, MessageType } from '@prisma/client';
 
 type DisplayMessage = ChatMessage & {
   client: {
@@ -13,7 +13,7 @@ type DisplayMessage = ChatMessage & {
 @Injectable()
 export class ChatService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(createChatDto: CreateChatDto) {
+  async create(createChatDto: CreateChatDto, messageType: MessageType) {
     const { chatId, content, clientId } = createChatDto;
     return await this.prismaService.chatMessage.create({
       data: {
@@ -28,6 +28,7 @@ export class ChatService {
           },
         },
         content,
+        messageType,
       },
     });
   }

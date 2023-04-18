@@ -10,6 +10,7 @@ import { CreateChatDto } from './dto/create-chat.dto';
 import { JoinChatDto } from './dto/join-chat.dto';
 import { Server, Socket } from 'socket.io';
 import { throwErrorException } from 'src/utils/error';
+import { MessageType } from '@prisma/client';
 
 @WebSocketGateway(2000, { cors: '*' })
 export class ChatGateway {
@@ -19,13 +20,16 @@ export class ChatGateway {
   @SubscribeMessage('message')
   async create(@MessageBody() payload: CreateChatDto) {
     try {
-      await this.chatService.create(payload);
+      const messageContent = await this.chatService.create(
+        payload,
+        MessageType.CLIENT,
+      );
       const { nickname } = await this.chatService.getClintNickname(
         payload.clientId,
       );
       this.server
         .to(payload.chatId.toString())
-        .emit('message', { ...payload, nickname: nickname });
+        .emit('message', { ...messageContent, nickname: nickname });
     } catch (error) {
       throwErrorException(error);
     }
@@ -38,13 +42,21 @@ export class ChatGateway {
   ) {
     try {
       await client.join(payload.chatId.toString());
-      // await this.chatService.join(payload);
-      // const chatPayload: CreateChatDto = {
-      //   ...payload,
-      //   content: `Client Id ${payload.clientId} has joined the room`,
-      // };
-      // await this.chatService.create(chatPayload);
-      // this.server.to(payload.chatId.toString()).emit('message', chatPayload);
+      await this.chatService.join(payload);
+      const { nickname } = await this.chatService.getClintNickname(
+        payload.clientId,
+      );
+      const chatPayload: CreateChatDto = {
+        ...payload,
+        content: `${nickname} has joined the room`,
+      };
+      const messageContent = await this.chatService.create(
+        chatPayload,
+        MessageType.SYSTEM,
+      );
+      this.server
+        .to(payload.chatId.toString())
+        .emit('message', { ...messageContent, nickname: nickname });
     } catch (error) {
       throwErrorException(error);
     }
