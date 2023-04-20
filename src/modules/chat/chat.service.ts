@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { JoinChatDto } from './dto/join-chat.dto';
-import { ChatMessage, ClientStatus, MessageType } from '@prisma/client';
+import { ChatMessage, ClientStatus } from '@prisma/client';
 
 type DisplayMessage = ChatMessage & {
   client: {
@@ -13,7 +13,8 @@ type DisplayMessage = ChatMessage & {
 @Injectable()
 export class ChatService {
   constructor(private readonly prismaService: PrismaService) {}
-  async create(createChatDto: CreateChatDto, messageType: MessageType) {
+  async create(createChatDto: CreateChatDto) {
+    // const { chatId, content, clientId, messageType } = createChatDto;
     const { chatId, content, clientId } = createChatDto;
     return await this.prismaService.chatMessage.create({
       data: {
@@ -28,7 +29,7 @@ export class ChatService {
           },
         },
         content,
-        messageType,
+        // messageType,
       },
     });
   }
@@ -47,7 +48,7 @@ export class ChatService {
             id: clientId,
           },
         },
-        status: ClientStatus.OFFLINE,
+        status: ClientStatus.NOT_IN_CONVERSATION,
       },
     });
   }
@@ -93,7 +94,7 @@ export class ChatService {
         },
       },
     );
-    if (status === ClientStatus.INCHATGROUP) {
+    if (status === ClientStatus.IN_CONVERSATION) {
       return 0;
     }
     return await this.prismaService.chatMessage.count({
@@ -103,9 +104,14 @@ export class ChatService {
           gte: lastread,
         },
       },
-      // orderBy: {
-      //   createdAt: 'asc',
-      // },
+    });
+  }
+  async getLastMessageInChatGroup(chatId: number) {
+    return await this.prismaService.chatMessage.findFirst({
+      where: { chatId: chatId },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
   }
   removeExcesskey(displayMessage: DisplayMessage) {
@@ -117,7 +123,7 @@ export class ChatService {
       return this.removeExcesskey(message);
     });
   }
-  async getClintNickname(clientId: number) {
+  async getClientNickname(clientId: number) {
     return await this.prismaService.client.findUnique({
       where: {
         id: clientId,

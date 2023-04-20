@@ -1,11 +1,8 @@
 -- CreateEnum
-CREATE TYPE "MessageType" AS ENUM ('CLIENT', 'SYSTEM');
-
--- CreateEnum
 CREATE TYPE "ChatType" AS ENUM ('DIRECT', 'GROUP');
 
 -- CreateEnum
-CREATE TYPE "ClientStatus" AS ENUM ('INCHATGROUP', 'OFFLINE');
+CREATE TYPE "ClientStatus" AS ENUM ('IN_CONVERSATION', 'NOT_IN_CONVERSATION');
 
 -- CreateTable
 CREATE TABLE "Client" (
@@ -44,7 +41,6 @@ CREATE TABLE "ChatMessage" (
     "content" TEXT NOT NULL,
     "clientId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "messageType" "MessageType" NOT NULL,
 
     CONSTRAINT "ChatMessage_pkey" PRIMARY KEY ("id")
 );

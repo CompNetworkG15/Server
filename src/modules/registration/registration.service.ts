@@ -16,7 +16,7 @@ export class RegistrationService {
     private readonly chatGroupService: ChatGroupService,
   ) {}
   async createClient(createClientDto: CreateClientDto) {
-    const searchClientDto: SearchClientDto = new SearchClientDto();
+    const searchClientDto: SearchClientDto = { nickname: '' };
     const allClient = await this.clientService.findAll(searchClientDto);
     const newclient = await this.clientService.create(createClientDto);
     let results = [];

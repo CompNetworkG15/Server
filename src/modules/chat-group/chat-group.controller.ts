@@ -80,6 +80,20 @@ export class ChatGroupController {
     }
   }
 
+  @Delete('leave')
+  async leaveChatGroup(
+    @Res() response: FastifyReply,
+    @Body() payload: JoinChatDto,
+  ) {
+    try {
+      const chatmember = await this.chatService.leave(payload);
+      response.status(HttpStatus.OK).send(chatmember);
+    } catch (error) {
+      console.log(error);
+      throwErrorException(error);
+    }
+  }
+
   @Get('/all-group/:clientId')
   async findAll(
     @Query() searchChatGroupDto: SearchChatGroupDto,
@@ -96,7 +110,25 @@ export class ChatGroupController {
         chatGroups,
         searchChatGroupDto,
       );
-      response.status(HttpStatus.OK).send(formatData);
+      const test = await Promise.all(
+        formatData.map(async (group) => {
+          const totalUnRead =
+            await this.chatService.getUnreadMessageInChatGroup(
+              group.id,
+              +clientId,
+            );
+          const lastMessage = await this.chatService.getLastMessageInChatGroup(
+            group.id,
+          );
+          return {
+            ...group,
+            lastMessage: lastMessage,
+            totalUnRead: totalUnRead,
+          };
+        }),
+      );
+      console.log(test);
+      response.status(HttpStatus.OK).send(test);
     } catch (error) {
       throwErrorException(error);
     }
@@ -118,7 +150,6 @@ export class ChatGroupController {
         chatGroups,
         SearchChatGroupDto,
       );
-
       response.status(HttpStatus.OK).send(formatData);
     } catch (error) {
       throwErrorException(error);
