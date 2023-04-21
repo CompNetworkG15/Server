@@ -84,27 +84,34 @@ export class ChatService {
   }
 
   async getUnreadMessageInChatGroup(chatId: number, clientId: number) {
-    const { lastread, status } = await this.prismaService.chatmember.findUnique(
-      {
-        where: {
-          clientId_chatId: {
-            chatId,
-            clientId,
-          },
-        },
-      },
-    );
-    if (status === ClientStatus.IN_CONVERSATION) {
-      return 0;
-    }
-    return await this.prismaService.chatMessage.count({
+    const chatMember = await this.prismaService.chatmember.findUnique({
       where: {
-        chatId: chatId,
-        createdAt: {
-          gte: lastread,
+        clientId_chatId: {
+          chatId,
+          clientId,
         },
       },
     });
+    if (chatMember) {
+      const { lastread, status } = chatMember;
+      if (status === ClientStatus.IN_CONVERSATION) {
+        console.log('in conversation');
+        return 0;
+      }
+      return await this.prismaService.chatMessage.count({
+        where: {
+          chatId: chatId,
+          createdAt: {
+            gte: lastread,
+          },
+        },
+      });
+    } else
+      return await this.prismaService.chatMessage.count({
+        where: {
+          chatId: chatId,
+        },
+      });
   }
   async getLastMessageInChatGroup(chatId: number) {
     return await this.prismaService.chatMessage.findFirst({

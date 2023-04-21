@@ -5,6 +5,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SearchChatGroupDto } from './dto/search-chatGroup.dto';
 import { UpdateChatMemberDto } from './dto/update-chatmember.dto';
 import { Chat, ChatType } from '@prisma/client';
+import { throwErrorException } from 'src/utils/error';
 export type DisplayChat = Chat & {
   chatMembers: {
     client: {
@@ -159,15 +160,24 @@ export class ChatGroupService {
 
   async updateStatus(updateChatMemberDto: UpdateChatMemberDto) {
     const { chatId, clientId, ...otherProps } = updateChatMemberDto;
-    return await this.prismaService.chatmember.update({
+    const chatMmeber = await this.prismaService.chatmember.findUnique({
       where: {
         clientId_chatId: {
-          chatId: chatId,
           clientId: clientId,
+          chatId: chatId,
         },
       },
-      data: otherProps,
     });
+    if (chatMmeber)
+      await this.prismaService.chatmember.update({
+        where: {
+          clientId_chatId: {
+            clientId: clientId,
+            chatId: chatId,
+          },
+        },
+        data: otherProps,
+      });
   }
 
   removeExcessKeyInChatMember(displayChat: DisplayChat) {
