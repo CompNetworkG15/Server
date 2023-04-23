@@ -72,7 +72,7 @@ export class ClientService {
     return await this.prismaService.client.update({
       where: { id: id },
       data: {
-        image: 'images/user-profile/' + filename,
+        image: 'images/client-profile/' + filename,
       },
     });
   }
