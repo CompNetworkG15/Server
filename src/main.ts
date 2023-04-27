@@ -20,7 +20,7 @@ async function bootstrap() {
     adapter,
   );
   app.enableCors({
-    origin: ['http://localhost:2001'],
+    origin: [process.env.CLIENT_URL],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true,
   });
@@ -38,7 +38,7 @@ async function bootstrap() {
   });
   app.useGlobalPipes(new ValidationPipe());
   await app.register(contentParser);
-  await app.listen(2002);
+  await app.listen(2002, '0.0.0.0');
   if (module.hot) {
     module.hot.accept();
     module.hot.dispose(() => app.close());
