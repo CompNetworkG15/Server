@@ -218,7 +218,7 @@ export class ChatGroupService {
     const { name } = searchChatGroupDto;
     const filterNewData = name
       ? newData.filter((element) => {
-          return element.name.toLowerCase().includes(name);
+          return element.name.includes(name);
         })
       : newData;
     return filterNewData;
